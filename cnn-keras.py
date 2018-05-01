@@ -9,6 +9,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.models import Sequential
 from skimage import filters as skfilt
 import matplotlib.pylab as plt
+import models
 
 batch_size = 10
 num_classes = 3
@@ -48,20 +49,20 @@ print(x_validation.shape[0], 'test samples')
 # convert class vectors to binary class matrices - this is for use in the
 # categorical_crossentropy loss below
 
-model = Sequential()
-model.add(Conv2D(32, kernel_size=(5, 5), strides=(1, 1),
-                 activation='relu',
-                 input_shape=(128, 128, 1)))
-model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
-model.add(Conv2D(64, (5, 5), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Flatten())
-model.add(Dense(1000, activation='relu'))
-model.add(Dense(num_classes, activation='softmax'))
+#model = Sequential()
+#model.add(Conv2D(32, kernel_size=(5, 5), strides=(1, 1),
+#                 activation='relu',
+#                 input_shape=(128, 128, 1)))
+#model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+#model.add(Conv2D(64, (5, 5), activation='relu'))
+#model.add(MaxPooling2D(pool_size=(2, 2)))
+#model.add(Flatten())
+#model.add(Dense(1000, activation='relu'))
+#model.add(Dense(num_classes, activation='softmax'))
 
-model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=keras.optimizers.Adam(),
-              metrics=['accuracy'])
+#model.compile(loss=keras.losses.categorical_crossentropy,
+ #             optimizer=keras.optimizers.Adam(),
+#              metrics=['accuracy'])
 
 
 class AccuracyHistory(keras.callbacks.Callback):
@@ -73,10 +74,12 @@ class AccuracyHistory(keras.callbacks.Callback):
 
 history = AccuracyHistory()
 
+model = models.cnn()
+
 model.fit(x_train, y_train,
-          batch_size=batch_size,
+         batch_size=batch_size,
           epochs=epochs,
-          verbose=1,
+         verbose=1,
           validation_data=(x_validation, y_validation),
           callbacks=[history])
 score = model.evaluate(x_validation, y_validation, verbose=0)
