@@ -11,6 +11,10 @@ sess = tf.InteractiveSession()
 f = h5py.File(os.getcwd() + '/deep-neurons.hdf5', 'r')
 labels = f['labels']
 images = f['images']
+for image in images:
+    thresh_li = skfilt.threshold_li(image)
+    mask = image < thresh_li
+    image[mask] = 255
 BATCH_SIZE = 20
 
 sss_validation = StratifiedShuffleSplit(n_splits=1, test_size=0.3, random_state=42)
@@ -88,14 +92,14 @@ correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 sess.run(tf.global_variables_initializer())
-for epoch in range(5):
+for epoch in range(1000): 
     print("Training epoch: " + str(epoch))
     for index in range(int(images_train.shape[0] / BATCH_SIZE)):
         images_batch = np.reshape(images_train[index * BATCH_SIZE:(index + 1) * BATCH_SIZE], (BATCH_SIZE, 128*128))
         #import pdb; pdb.set_trace()
         labels_batch = labels_train[index * BATCH_SIZE:(index+1) * BATCH_SIZE]
         train_accuracy = accuracy.eval(feed_dict={
-            x: images_batch, y_: labels_batch, keep_prob: 1.0})
+            x: images_batch, y_: labels_batch, keep_prob: 0.8})
         print("step %d, training accuracy %g" % (epoch, train_accuracy))
         train_step.run(feed_dict={x: images_batch, y_: labels_batch, keep_prob: 0.5})
 
